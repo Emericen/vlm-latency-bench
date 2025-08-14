@@ -23,7 +23,7 @@ async def websocket_client():
         try:
             async for message in websocket:
                 data = json.loads(message)
-                print(f"Received message: {data}")
+                # print(f"Received message: {data}")
 
                 # Forward to HTTP API
                 try:

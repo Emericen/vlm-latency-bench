@@ -56,10 +56,7 @@ async def test_websocket():
 
     try:
         print("\n=== WebSocket Test ===")
-        print("Connecting to WebSocket server...")
         async with websockets.connect(uri) as websocket:
-            print("Connected! Sending message...")
-
             # Read and encode image for WebSocket test
             with open("data/test-img.png", "rb") as f:
                 base64_image = base64.b64encode(f.read()).decode("utf-8")
@@ -102,9 +99,7 @@ async def test_websocket():
                     print(content, end="", flush=True)
 
                 elif data["type"] == "complete":
-                    print(
-                        f"\n\nWebSocket test complete! Full response: {full_response}"
-                    )
+                    print()
                     break
 
                 elif data["type"] == "error":
