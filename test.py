@@ -13,12 +13,12 @@ def test_http_api():
     client = OpenAI(base_url="http://localhost:8000/v1", api_key="EMPTY")
 
     # Read and encode image
-    with open("/home/ubuntu/experiment/test-img.png", "rb") as f:
+    with open("data/test-img.png", "rb") as f:
         base64_image = base64.b64encode(f.read()).decode("utf-8")
 
     # Test vision chat
     stream = client.chat.completions.create(
-        model="Qwen/Qwen2.5-VL-7B-Instruct",
+        model="Qwen/Qwen2.5-VL-3B-Instruct",
         messages=[
             {
                 "role": "user",
@@ -60,12 +60,25 @@ async def test_websocket():
         async with websockets.connect(uri) as websocket:
             print("Connected! Sending message...")
 
-            # Send a test message
+            # Read and encode image for WebSocket test
+            with open("data/test-img.png", "rb") as f:
+                base64_image = base64.b64encode(f.read()).decode("utf-8")
+
+            # Send a test message with image
             message = {
                 "messages": [
-                    {"role": "user", "content": "Hello! Tell me a short joke."}
+                    {
+                        "role": "user", 
+                        "content": [
+                            {"type": "text", "text": "What food do you see in this image?"},
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/png;base64,{base64_image}"},
+                            },
+                        ]
+                    }
                 ],
-                "max_tokens": 50,
+                "max_tokens": 100,
             }
 
             await websocket.send(json.dumps(message))

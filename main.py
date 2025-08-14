@@ -10,6 +10,8 @@ import websockets
 from openai import OpenAI
 
 
+MODEL = os.getenv("MODEL", "Qwen/Qwen2.5-VL-3B-Instruct")
+
 async def websocket_client():
     """WebSocket client that connects to HTTP API"""
 
@@ -26,7 +28,7 @@ async def websocket_client():
                 # Forward to HTTP API
                 try:
                     response = client.chat.completions.create(
-                        model=data.get("model", "Qwen/Qwen2.5-VL-7B-Instruct"),
+                        model=data.get("model", "Qwen/Qwen2.5-VL-3B-Instruct"),
                         messages=data.get("messages", []),
                         max_tokens=data.get("max_tokens", 100),
                         stream=True,
@@ -56,7 +58,12 @@ async def websocket_client():
 
     # Start WebSocket server on different port
     print("Starting WebSocket server on port 8001...")
-    server = await websockets.serve(handle_websocket, "0.0.0.0", 8001)
+    server = await websockets.serve(
+        handle_websocket, 
+        "0.0.0.0", 
+        8001,
+        max_size=10 * 1024 * 1024  # 10MB limit for large images
+    )
     print("WebSocket server running on ws://localhost:8001")
     await server.wait_closed()
 

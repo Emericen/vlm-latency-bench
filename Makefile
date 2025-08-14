@@ -1,7 +1,7 @@
 DOCKER_IMAGE = vllm-websocket
 CONTAINER_NAME = vllm-websocket-server
 PORT = 8000
-MODEL = Qwen/Qwen2.5-VL-7B-Instruct
+MODEL = Qwen/Qwen2.5-VL-3B-Instruct
 
 .PHONY: build run logs stop clean restart
 
