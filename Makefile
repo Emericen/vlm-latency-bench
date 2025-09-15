@@ -1,5 +1,7 @@
 MODEL      ?= Qwen/Qwen2.5-VL-3B-Instruct
 TOOL_CALL_PARSER ?= hermes
+DTYPE      ?= auto # auto, bfloat16, half, float16, float32
+QUANTIZATION ?= # fp8, awq, gptq, gguf (empty = no quantization)
 GPUS       ?= all
 HF_CACHE   ?= $(HOME)/.cache/huggingface
 
@@ -18,7 +20,8 @@ run: stop
 	  --host 0.0.0.0 --port 8000 \
 	  --served-model-name "$(MODEL)" \
 	  --trust-remote-code \
-	  --dtype auto \
+	  --dtype $(DTYPE) \
+	  $(if $(QUANTIZATION),--quantization $(QUANTIZATION)) \
 	  --enable-prefix-caching \
 	  --enable-auto-tool-choice \
 	  --tool-call-parser $(TOOL_CALL_PARSER)
