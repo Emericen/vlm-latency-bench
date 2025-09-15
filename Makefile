@@ -1,62 +1,48 @@
-DOCKER_IMAGE = vllm-websocket
-CONTAINER_NAME = vllm-websocket-server
-PORT = 8000
-MODEL = Qwen/Qwen2.5-VL-3B-Instruct
+MODEL      ?= Qwen/Qwen2.5-VL-3B-Instruct
+TOOL_CALL_PARSER ?= hermes
+GPUS       ?= all
+HF_CACHE   ?= $(HOME)/.cache/huggingface
 
-.PHONY: build run logs stop clean restart
+pull:
+	docker pull vllm/vllm-openai:latest
 
-build:
-	@echo "Building custom vLLM WebSocket image..."
-	docker build -t $(DOCKER_IMAGE) .
+run: stop
+	docker run -d --name vllm \
+	  --gpus $(GPUS) \
+	  --restart unless-stopped \
+	  -p 8000:8000 \
+	  -v $(HF_CACHE):/root/.cache/huggingface \
+	  --shm-size=16g --ipc=host \
+	  vllm/vllm-openai:latest \
+	  --model "$(MODEL)" \
+	  --host 0.0.0.0 --port 8000 \
+	  --served-model-name "$(MODEL)" \
+	  --trust-remote-code \
+	  --dtype auto \
+	  --enable-prefix-caching \
+	  --enable-auto-tool-choice \
+	  --tool-call-parser $(TOOL_CALL_PARSER)
+	@echo "HTTP API: http://localhost:8000/v1   (health: /v1/models)"
 
-run:
-	@echo "Starting vLLM server with WebSocket support..."
-	@echo "HTTP API available at: http://localhost:$(PORT)/v1"
-	@echo "WebSocket API available at: ws://localhost:8001"
-	@if [ "$$(docker ps -aq -f name=$(CONTAINER_NAME))" ]; then \
-		echo "Removing existing container..."; \
-		docker rm -f $(CONTAINER_NAME); \
-	fi
-	docker run -d \
-		--name $(CONTAINER_NAME) \
-		--gpus all \
-		-p $(PORT):$(PORT) \
-		-p 8001:8001 \
-		--ipc=host \
-		--shm-size=16g \
-		-v ~/.cache/huggingface:/root/.cache/huggingface \
-		-e MODEL=$(MODEL) \
-		-e HOST=0.0.0.0 \
-		-e PORT=$(PORT) \
-		$(DOCKER_IMAGE)
-	@echo "Container started. Use 'make logs' to see output."
-
-logs:
-	@echo "Following logs for $(CONTAINER_NAME)..."
-	@if [ "$$(docker ps -q -f name=$(CONTAINER_NAME))" ]; then \
-		docker logs -f $(CONTAINER_NAME); \
-	else \
-		echo "Container is not running."; \
-	fi
+restart: stop run  
 
 stop:
-	@echo "Stopping vLLM WebSocket server..."
-	@if [ "$$(docker ps -q -f name=$(CONTAINER_NAME))" ]; then \
-		docker stop $(CONTAINER_NAME); \
-		echo "Container stopped."; \
-	else \
-		echo "Container is not running."; \
-	fi
+	-@docker rm -f vllm 2>/dev/null || true
+
+logs:
+	docker logs -f --tail=200 vllm
+
+ps:
+	docker ps --filter name=vllm
+
+health:
+	curl -sf http://localhost:8000/v1/models | jq . || curl -sf http://localhost:8000/v1/models
+
+shell:
+	docker exec -it vllm /bin/bash
 
 clean: stop
-	@echo "Cleaning up..."
-	@if [ "$$(docker ps -aq -f name=$(CONTAINER_NAME))" ]; then \
-		docker rm $(CONTAINER_NAME); \
-		echo "Container removed."; \
-	fi
-	@if [ "$$(docker images -q $(DOCKER_IMAGE))" ]; then \
-		docker rmi $(DOCKER_IMAGE); \
-		echo "Image removed."; \
-	fi
+	-@docker rmi vllm/vllm-openai:latest 2>/dev/null || true
 
-restart: stop run
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?##' Makefile | awk 'BEGIN{FS=":.*?##"}{printf "  \033[36m%-12s\033[0m %s\n",$$1,$$2}'
