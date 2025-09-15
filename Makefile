@@ -1,9 +1,10 @@
-MODEL      ?= Qwen/Qwen2.5-VL-3B-Instruct
+MODEL      ?= Qwen/Qwen2.5-VL-7B-Instruct
 TOOL_CALL_PARSER ?= hermes
 DTYPE      ?= auto # auto, bfloat16, half, float16, float32
 QUANTIZATION ?= # fp8, awq, gptq, gguf (empty = no quantization)
 GPUS       ?= all
 HF_CACHE   ?= $(HOME)/.cache/huggingface
+PORT       ?= 8000
 
 pull:
 	docker pull vllm/vllm-openai:latest
@@ -12,7 +13,7 @@ run: stop
 	docker run -d --name vllm \
 	  --gpus $(GPUS) \
 	  --restart unless-stopped \
-	  -p 8000:8000 \
+	  -p $(PORT):8000 \
 	  -v $(HF_CACHE):/root/.cache/huggingface \
 	  --shm-size=16g --ipc=host \
 	  vllm/vllm-openai:latest \
@@ -25,7 +26,7 @@ run: stop
 	  --enable-prefix-caching \
 	  --enable-auto-tool-choice \
 	  --tool-call-parser $(TOOL_CALL_PARSER)
-	@echo "HTTP API: http://localhost:8000/v1   (health: /v1/models)"
+	@echo "HTTP API: http://localhost:$(PORT)/v1   (health: /v1/models)"
 
 restart: stop run  
 
@@ -39,7 +40,7 @@ ps:
 	docker ps --filter name=vllm
 
 health:
-	curl -sf http://localhost:8000/v1/models | jq . || curl -sf http://localhost:8000/v1/models
+	curl -sf http://localhost:$(PORT)/v1/models | jq . || curl -sf http://localhost:$(PORT)/v1/models
 
 shell:
 	docker exec -it vllm /bin/bash
