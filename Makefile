@@ -2,6 +2,7 @@ MODEL      ?= Qwen/Qwen2.5-VL-7B-Instruct
 TOOL_CALL_PARSER ?= hermes
 DTYPE      ?= auto # auto, bfloat16, half, float16, float32
 QUANTIZATION ?= # fp8, awq, gptq, gguf (empty = no quantization)
+TENSOR_PARALLEL ?= 1 # number of GPUs for tensor parallelism
 GPUS       ?= all
 HF_CACHE   ?= $(HOME)/.cache/huggingface
 PORT       ?= 8000
@@ -23,6 +24,7 @@ run: stop
 	  --trust-remote-code \
 	  --dtype $(DTYPE) \
 	  $(if $(QUANTIZATION),--quantization $(QUANTIZATION)) \
+	  --tensor-parallel-size $(TENSOR_PARALLEL) \
 	  --enable-prefix-caching \
 	  --enable-auto-tool-choice \
 	  --tool-call-parser $(TOOL_CALL_PARSER)
@@ -35,12 +37,6 @@ stop:
 
 logs:
 	docker logs -f --tail=200 vllm
-
-ps:
-	docker ps --filter name=vllm
-
-health:
-	curl -sf http://localhost:$(PORT)/v1/models | jq . || curl -sf http://localhost:$(PORT)/v1/models
 
 shell:
 	docker exec -it vllm /bin/bash
