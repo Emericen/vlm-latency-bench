@@ -51,3 +51,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# playground.ipynb
+playground.ipynb

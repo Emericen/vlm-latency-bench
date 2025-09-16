@@ -178,4 +178,4 @@ if __name__ == "__main__":
             "assistant_responses": responses,
         }
     )
-    df.to_csv(f"results/{args.model_name}_results.csv", index=False)
+    df.to_csv(args.output_file, index=False)

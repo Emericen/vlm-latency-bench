@@ -99,6 +99,11 @@ def run_conversation(
         assistant_response = "".join(response_tokens)
         end_time = time.time() - start_time
 
+        print(f"Turn {i+1} TTFT: {ttft:.3f}s")
+        print(f"Turn {i+1} Time to completion: {end_time:.3f}s")
+        print(f"Turn {i+1} Response: {assistant_response}")
+        print()
+
         times_to_first_token.append(ttft)
         times_to_completion.append(end_time)
         assistant_responses.append(assistant_response)
@@ -112,10 +117,11 @@ if __name__ == "__main__":
         description="Benchmark local model multi-modal inference latency."
     )
     parser.add_argument("--model_name", default="Qwen/Qwen2.5-VL-7B-Instruct")
-    parser.add_argument("--base_url", default="http://0.0.0.0:443/v1")
+    parser.add_argument("--base_url", default="http://192.222.53.224:443/v1")
     parser.add_argument("--max_tokens", type=int, default=32)
     parser.add_argument("--data_repeat", type=int, default=3)
     parser.add_argument("--data_seed", type=int, default=1337)
+    parser.add_argument("--output_file", type=str, default="results/qwen2.5_vl_7b_instruct_results.csv")
     args = parser.parse_args()
 
     client = OpenAI(base_url=args.base_url, api_key="EMPTY")
@@ -134,4 +140,4 @@ if __name__ == "__main__":
             "assistant_responses": responses,
         }
     )
-    df.to_csv(f"{args.model_name}_stats.csv", index=False)
+    df.to_csv(args.output_file, index=False)
