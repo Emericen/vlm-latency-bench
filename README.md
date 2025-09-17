@@ -4,6 +4,8 @@ A small test for vision language model (VLM) inference speed on text+image to te
 
 Here I compare the response speed of Qwen 2.5 VL (except 72B) vs Claude 4 Sonnet. I ran on randomized conversation of 60 turns, where each turn contains one 720p image and one short text question.
 
+![VLM Inference Results](results/t2c_result.png)
+
 ## Experiment Commands
 
 Here's how to use this repo.
