@@ -1,0 +1,35 @@
+In general, most actinide isotopes with an odd neutron number are fissile. Most nuclear fuels have an odd atomic mass number (A = Z + N = the total number of nucleons), and an even atomic number Z. This implies an odd number of neutrons. Isotopes with an odd number of neutrons gain an extra 1 to 2 MeV of energy from absorbing an extra neutron, from the pairing effect which favors even numbers of both neutrons and protons. This energy is enough to supply the needed extra energy for fission by slower neutrons, which is important for making fissionable isotopes also fissile.
+
+More generally, nuclides with an even number of protons and an even number of neutrons, and located near a well-known curve in nuclear physics of atomic number vs. atomic mass number are more stable than others; hence, they are less likely to undergo fission. They are more likely to "ignore" the neutron and let it go on its way, or else to absorb the neutron but without gaining enough energy from the process to deform the nucleus enough for it to fission. These "even-even" isotopes are also less likely to undergo spontaneous fission, and they also have relatively much longer partial half-lives for alpha or beta decay. Examples of these isotopes are uranium-238 and thorium-232. On the other hand, other than the lightest nuclides, nuclides with an odd number of protons and an odd number of neutrons (odd Z, odd N) are usually short-lived (a notable exception is neptunium-236 with a half-life of 154,000 years) because they readily decay by beta-particle emission to their isobars with an even number of protons and an even number of neutrons (even Z, even N) becoming much more stable. The physical basis for this phenomenon also comes from the pairing effect in nuclear binding energy, but this time from both proton–proton and neutron–neutron pairing. The relatively short half-life of such odd-odd heavy isotopes means that they are not available in quantity and are highly radioactive.
+
+According to the fissility rule proposed by Yigal Ronen, for a heavy element with Z between 90 and 100, an isotope is fissile if and only if 2 × Z − N ∈ {41, 43, 45} (where N = number of neutrons and Z = number of protons), with a few exceptions.[13][14] This rule holds for all but fourteen nuclides – seven that satisfy the criterion but are nonfissile, and seven that are fissile but do not satisfy the criterion.[note 1]
+
+Nuclear fuel
+Main article: Nuclear fuel
+To be a useful fuel for nuclear fission chain reactions, the material must:
+
+Be in the region of the binding energy curve where a fission chain reaction is possible (i.e., above radium)
+Have a high probability of fission on neutron capture
+Release more than one neutron on average per neutron capture. (Enough of them on each fission, to compensate for non-fissions and absorptions in non-fuel material)
+Have a reasonably long half-life
+Be available in suitable quantities.
+Capture-fission ratios of fissile nuclides
+Thermal neutrons[15]		Epithermal neutrons
+σF (b)	σγ (b)	%		σF (b)	σγ (b)	%
+531	46	8.0%	233U	760	140	16%
+585	99	14.5%	235U	275	140	34%
+750	271	26.5%	239Pu	300	200	40%
+1010	361	26.3%	241Pu	570	160	22%
+Fissile nuclides in nuclear fuels include:
+
+Uranium-233, bred from thorium-232 by neutron capture with intermediate decays steps omitted.
+Uranium-235, which occurs in natural uranium and enriched uranium
+Plutonium-239, bred from uranium-238 by neutron capture with intermediate decays steps omitted.
+Plutonium-241, bred from plutonium-240 directly by neutron capture.
+Fissile nuclides do not have a 100% chance of undergoing fission on absorption of a neutron. The chance is dependent on the nuclide as well as neutron energy. For low and medium-energy neutrons, the neutron capture cross sections for fission (σF), the cross section for neutron capture with emission of a gamma ray (σγ), and the percentage of non-fissions are in the table at right.
+
+Fertile nuclides in nuclear fuels include:
+
+Thorium-232, which breeds uranium-233 by neutron capture with intermediate decays steps omitted.
+Uranium-238, which breeds plutonium-239 by neutron capture with intermediate decays steps omitted.
+Plutonium-240, which breeds plutonium-241 directly by neutron capture.

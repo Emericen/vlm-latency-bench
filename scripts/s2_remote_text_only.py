@@ -12,62 +12,50 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-
 def load_user_messages(repeat=3, seed=1337):
-    """Returns a random list of user questions about some 720p images"""
+    """Returns a random list of user questions about some 1000+ token texts"""
     random.seed(seed)
-    img_paths = sorted(glob.glob("data/test-img-*.jpg"))
+    txt_paths = sorted(glob.glob("data/test-txt-*.txt"))
+    texts = []
+    for txt_path in txt_paths:
+        with open(txt_path, "r", encoding="utf-8") as f:
+            texts.append(f.read())
+
     questions = [
-        "What do you see in this image?",
-        "Describe the content of this image concisely.",
-        "What's in the image?",
-        "Where is this image taken?",
-        "Summarize the content of this image in one sentence.",
-        "What's the main subject of this image?",
-        "What's the background of this image?",
-        "What's the color of the background?",
-        "What's the texture of the background?",
-        "How many objects can you count in this image?",
-        "What emotions or mood does this image convey?",
-        "What time of day do you think this photo was taken?",
-        "Are there any people visible in this image?",
-        "What style or genre would you classify this image as?",
-        "What details can you notice about the lighting?",
-        "What is the meaning of this image?",
-        "How would you name this image?",
-        "What do you find most interesting about this image?",
-        "What is the message of this image?",
-        "What is the moral of this image?",
-        "What did you learn from this image about B2B SaaS?",
+        "What is the main topic of this text?",
+        "Summarize this text in one sentence.",
+        "What is the key message in this text?",
+        "What genre or type of writing is this?",
+        "What is the tone of this text?",
+        "Who is the intended audience for this text?",
+        "What emotions does this text convey?",
+        "What is the author's main argument?",
+        "What evidence does the text provide?",
+        "What conclusions can you draw from this text?",
+        "What is the most important sentence in this text?",
+        "What questions does this text raise?",
+        "What is the writing style of this text?",
+        "What themes are present in this text?",
+        "What is the purpose of this text?",
+        "What did you learn from this text?",
+        "How would you categorize this text?",
+        "What is the central idea of this text?",
+        "What perspective does this text represent?",
+        "What makes this text compelling or interesting?",
     ]
 
-    img_paths = img_paths * repeat
+    texts = texts * repeat
     questions = questions * repeat
 
-    random.shuffle(img_paths)
+    random.shuffle(texts)
     random.shuffle(questions)
 
     user_messages = []
-    for image, question in zip(img_paths, questions):
-        img_b64 = encode_image(image)
+    for text, question in zip(texts, questions):
         user_messages.append(
             {
                 "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/jpeg",
-                            "data": img_b64,
-                        },
-                    },
-                    {"type": "text", "text": question},
-                ],
+                "content": [{"type": "text", "text": f"{text}\n\n --- \n\n{question}"}],
             }
         )
     return user_messages
@@ -114,7 +102,7 @@ def run_conversation(
             stream=False,
         )
 
-        assistant_response = response.content
+        assistant_response = response.content[0].text
         end_time = time.time() - start_time
 
         print(f"Turn {i+1} Time to completion: {end_time:.3f}s")
@@ -130,16 +118,16 @@ def run_conversation(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Benchmark local model multi-modal inference latency."
+        description="Benchmark remote model text only inference latency."
     )
     parser.add_argument("--model_name", default="claude-sonnet-4-20250514")
     parser.add_argument("--max_tokens", type=int, default=32)
     parser.add_argument("--data_repeat", type=int, default=3)
-    parser.add_argument("--data_seed", type=int, default=1337)
+    parser.add_argument("--data_seed", type=int, default=88)
     parser.add_argument(
         "--output_file",
         type=str,
-        default="results/claude_sonnet_4_20250514_results.csv",
+        default="results/claude_sonnet_4_20250514_txt_only_results_run_3.csv",
     )
     args = parser.parse_args()
 

@@ -1,0 +1,52 @@
+In nuclear engineering, fissile material is material that can undergo nuclear fission when struck by a neutron of low energy.[1] A self-sustaining thermal chain reaction can only be achieved with fissile material. The predominant neutron energy in a system may be typified by either slow neutrons (i.e., a thermal system) or fast neutrons. Fissile material can be used to fuel thermal-neutron reactors, fast-neutron reactors and nuclear explosives.
+
+Fissile vs fissionable
+Region of relative stability: radium-226 to einsteinium-252
+      	88	89	90	91	92	93	94	95	96	97	98	99	      	
+ 															 
+ 154 		
+Half-life Key
+  1 	 10 	100 
+  1k	 10k	100k
+  1M	 10M	100M
+  1G	 10G	(a)
+250Cm		252Cf			 154 
+ 153 									251Cf	252Es		 153 
+ 152 							248Cm		250Cf			 152 
+ 151 							247Cm	248Bk	249Cf			 151 
+ 150 					244Pu		246Cm	247Bk				 150 
+ 149 										245Cm					 149 
+ 148 								242Pu	243Am	244Cm					 148 
+ 147 								241Pu	242m⁂	243Cm					 147 
+ 146 						238U 		240Pu	241Am						 146 
+ 145 								239Pu							 145 
+ 144 						236U 	237Np	238Pu							 144 
+ 143 						235U 	236Np								 143 
+ 142 				232Th		234U 	235Np	236Pu							 142 
+ 141 						233U 									 141 
+ 140 		228Ra		230Th	231Pa	232U 					
+Table Axes
+Neutrons	(N)
+Protons	(Z)
+ 140 
+ 139 				229Th								 139 
+ 138 		226Ra	227Ac	228Th								 138 
+ 															 
+      	88	89	90	91	92	93	94	95	96	97	98	99	      	
+Only nuclides with a half-life of at least one year are shown on this table.
+The term fissile is distinct from fissionable. A nuclide that can undergo nuclear fission (even with a low probability) after capturing a neutron of high or low energy[2] is referred to as fissionable. A fissionable nuclide that can undergo fission with a high probability after capturing a low-energy thermal neutron is referred to as fissile.[3] Fissionable materials include those (such as uranium-238) for which fission can be induced only by high-energy neutrons. As a result, fissile materials (such as uranium-235) are a subset of fissionable materials.
+
+Uranium-235 fissions with low-energy thermal neutrons because the binding energy resulting from the absorption of a neutron is greater than the threshold required for fission; therefore uranium-235 is fissile. By contrast, the binding energy released by uranium-238 absorbing a thermal neutron is less than the critical energy, so the neutron must possess additional energy for fission to be possible. Consequently, uranium-238 is fissionable but not fissile.[4][5]
+
+An alternative definition defines fissile nuclides as those nuclides that can be made to undergo nuclear fission (i.e., are fissionable) and also produce neutrons from such fission that can sustain a nuclear chain reaction in the correct setting. Under this definition, the only nuclides that are fissionable but not fissile are those nuclides that can be made to undergo nuclear fission but produce insufficient neutrons, in either energy or number, to sustain a nuclear chain reaction. As such, while all fissile isotopes are fissionable, not all fissionable isotopes are fissile. In the arms control context, particularly in proposals for a Fissile Material Cutoff Treaty, the term fissile is often used to describe materials that can be used in the fission primary of a nuclear weapon.[6] These are materials that sustain an explosive fast neutron nuclear fission chain reaction.
+
+Under all definitions above, uranium-238 (238
+U) is fissionable, but not fissile. Neutrons produced by fission of 238
+U have lower energies than the original neutron (they behave as in an inelastic scattering), usually below 1 MeV (i.e., a speed of about 14,000 km/s), the fission threshold to cause subsequent fission of 238
+U, so fission of 238
+U does not sustain a nuclear chain reaction.
+
+Fast fission of 238
+U in the secondary stage of a thermonuclear weapon, due to the production of high-energy neutrons from nuclear fusion, contributes greatly to the yield and to fallout of such weapons. Fast fission of 238
+U tampers has also been evident in pure fission weapons.[7] The fast fission of 238
+U also makes a significant contribution to the power output of some fast-neutron reactors.

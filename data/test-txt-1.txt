@@ -1,0 +1,80 @@
+
+what happens if i not use their docker image, and either do vllm --serve or use from vllm import LLM, SamplingParams + my own server? is that easier to pin version number in requirements.txt and is the later batter for passing images? but i guess the image itself still need to somehow make it into my server and that's the tricky part?
+
+---
+
+Yes—you can skip the Docker image and either:
+
+* **Run the CLI server**: `vllm serve ...` (OpenAI-compatible HTTP).
+
+  * **Version pinning**: `pip install vllm==X.Y.Z` (and compatible Torch/CUDA/flash-attn) or pin a Docker **tag** instead of `latest`.
+  * **Images**: same API as the container (URLs or base64). You still must get image bytes to the server.
+
+* **Use the Python API**: `from vllm import LLM, SamplingParams`.
+
+  * Great when your app and model run **on the same box** (you can point to **local file paths** or preloaded bytes → no network upload).
+  * You’ll implement your own tiny HTTP/WebSocket wrapper if you need remote access or tool-calling UX.
+
+**Which is easier?**
+
+* **Easiest/repro-safe**: Docker with a **pinned tag** (no CUDA/dep wrangling).
+* **Most flexible/lowest I/O overhead**: Python API **in-process** (especially if your screenshots already live on that machine).
+* **Middle ground**: `vllm serve` from a **pinned wheel**; simpler deploy than writing your own server, but you still handle CUDA/Torch versions.
+
+**Image handling tips (regardless of path)**
+
+* Prefer **URLs** hosted near the model (S3/minio/Nginx) over base64 to cut payloads.
+* Keep static frames **byte-identical** across turns to hit **V1’s preprocessing/prefix cache**.
+* If you control both sides, upload once → reference by URL thereafter.
+
+---
+
+i just think what you say doesn't make sense. that if i've KV cache established on N messages, on image N + 1 my T2C would equal to inferencing 1 message. even with anthropic's prompt caching enabled that wasn't what i observed: it gets slower latter on in the API, even w cache hit kept increasing turn after turn.
+
+---
+
+You’re assuming “prompt/prefix cache ⇒ only 1 new item’s cost.” That’s not how Transformers work.
+
+* **Prefix/prompt cache only skips prefill of the *unchanged* prefix.**
+  It does **not** make decoding free. During **decode**, each new token still attends over **all prior keys** → per-token cost grows \~linearly with context length **L**. Longer chat ⇒ slower tok/s ⇒ higher TtC.
+
+* **Vision blows up L.** Each 720p frame becomes **\~1–1.5k tokens** (model-dependent). Add images → bigger L → slower decode, even with perfect prefix hits.
+
+* **Extra overhead remains:** larger payloads (base64), JSON parsing, possible re-preprocess for images (unless content-hashed and hit), and **KV page copy** for the cached prefix all scale with prefix size.
+
+This is why your TtC climbed as you went from 1→60 images—even with cache hits increasing. To keep TtC flat, cap **effective L** (sliding window), keep a **byte-identical static system block** first for prefix hits, and bound generation length; everything else just reduces the slope, not the principle.
+
+---
+
+so no, if i 20 image message system prompt (cached) and a 20 image message sliding window prompt, my T2C would NOT be just 20 image message T2C, bc the sliding window will need to attend to all previous messages so it takes longer and my observation of increasing T2C in the incremental message from 1 to 60 is likely correct?
+
+btw, i got pod running:
+```
+ubuntu@209-20-158-190:~/vlm-latency-bench$ docker ps
+CONTAINER ID   IMAGE                     COMMAND                  CREATED         STATUS         PORTS                                         NAMES
+c576766772f5   vllm/vllm-openai:latest   "python3 -m vllm.ent…"   2 minutes ago   Up 2 minutes   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   vllm
+ubuntu@209-20-158-190:~/vlm-latency-bench$ docker exec -it c576766772f5 /bin/bash
+root@c576766772f5:/vllm-workspace# python
+bash: python: command not found
+root@c576766772f5:/vllm-workspace#  
+```
+how do i get vllm version?
+
+---
+
+Yes—your conclusion is right. Even with a cached 20-image system prefix, the model’s **decode** still attends over **all KVs in the request** (prefix + sliding window). So TtC grows with the **total effective context** (e.g., 40 images), which matches your 1→60 behavior. My earlier wording implied “20-image cost only” — that omitted the decode cost over the cached KVs.
+
+To check vLLM version in the container:
+
+```bash
+# easiest: run python3 directly
+docker exec -it vllm python3 -c "import vllm,os; print('vllm', vllm.__version__, 'VLLM_USE_V1=', os.getenv('VLLM_USE_V1'))"
+
+# or via pip
+docker exec -it vllm python3 -m pip show vllm | grep Version
+
+# if 'python3' isn’t on PATH, try:
+docker exec -it vllm /usr/local/bin/python3 -c "import vllm; print(vllm.__version__)"
+```
+
+(You typed `python`—use `python3` in this image.)
