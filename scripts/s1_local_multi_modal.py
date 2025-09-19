@@ -92,6 +92,8 @@ def run_conversation(
 
         print(f"Turn {i+1} Time to completion: {end_time:.3f}s")
         print(f"Turn {i+1} Response: {assistant_response}")
+        # print usage
+        print(f"Turn {i+1} Usage: {response.usage}")
         print()
 
         times_to_completion.append(end_time)
@@ -105,8 +107,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Benchmark local model multi-modal inference latency."
     )
-    parser.add_argument("--model_name", default="Qwen/Qwen2.5-VL-7B-Instruct")
-    parser.add_argument("--base_url", default="https://2rkxzi69xliit6-8000.proxy.runpod.net/v1")
+    parser.add_argument("--model_name", default="Qwen/Qwen2.5-VL-32B-Instruct")
+    parser.add_argument("--base_url", default="http://192.222.53.119:443/v1")
     parser.add_argument("--max_tokens", type=int, default=32)
     parser.add_argument("--data_repeat", type=int, default=3)
     parser.add_argument("--data_seed", type=int, default=1337)

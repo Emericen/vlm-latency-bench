@@ -6,6 +6,8 @@ Here I compare the response speed of Qwen 2.5 VL (except 72B) vs Claude 4 Sonnet
 
 ![VLM Inference Results](results/t2c_result.png)
 
+![VLM Inference Solution](results/t2c_solution.png)
+
 ## Experiment Commands
 
 Here's how to use this repo.

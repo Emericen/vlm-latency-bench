@@ -3,7 +3,6 @@ import base64
 import glob
 import random
 import argparse
-import uuid
 from openai import OpenAI
 import pandas as pd
 
@@ -47,25 +46,20 @@ def load_user_messages(repeat=3, seed=1337):
     random.shuffle(img_paths)
     random.shuffle(questions)
 
-    user_messages = []
+    image_messages = []
     for image, question in zip(img_paths, questions):
         img_b64 = encode_image(image)
         img_url = f"data:image/jpeg;base64,{img_b64}"
-        uuid_str = str(uuid.uuid4())
-        user_messages.append(
+        image_messages.append(
             {
                 "role": "user",
                 "content": [
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": img_url},
-                        "uuid": uuid_str,
-                    },
+                    {"type": "image_url", "image_url": {"url": img_url}},
                     {"type": "text", "text": question},
                 ],
             }
         )
-    return user_messages
+    return image_messages
 
 
 def run_conversation(
@@ -76,15 +70,15 @@ def run_conversation(
     seed: int,
 ):
     """have LLM answer each user message in one multi-turn conversation and record time to first token total time to completion on each turn"""
-    user_messages = load_user_messages(repeat=repeat, seed=seed)
+    image_messages = load_user_messages(repeat=repeat, seed=seed)
 
     # stats storage
     times_to_completion = []
     assistant_responses = []
 
     chat_history = []
-    for i, user_message in enumerate(user_messages):
-        chat_history.append(user_message)
+    for i, image_message in enumerate(image_messages):
+        chat_history.append(image_message)
         start_time = time.time()
         response = client.chat.completions.create(
             messages=chat_history,
@@ -98,16 +92,15 @@ def run_conversation(
 
         print(f"Turn {i+1} Time to completion: {end_time:.3f}s")
         print(f"Turn {i+1} Response: {assistant_response}")
+        # print usage
+        print(f"Turn {i+1} Usage: {response.usage}")
         print()
 
         times_to_completion.append(end_time)
         assistant_responses.append(assistant_response)
+        chat_history.pop(-1)
+        chat_history.append({"role": "assistant", "content": assistant_response * 10})
         
-        # For subsequent turns, set image url to None to trigger cache hit
-        chat_history[-1]["content"][0]["image_url"]["url"] = ""
-
-        chat_history.append({"role": "assistant", "content": assistant_response})
-
     return times_to_completion, assistant_responses
 
 
@@ -116,14 +109,14 @@ if __name__ == "__main__":
         description="Benchmark local model multi-modal inference latency."
     )
     parser.add_argument("--model_name", default="Qwen/Qwen2.5-VL-32B-Instruct")
-    parser.add_argument("--base_url", default="http://192.222.53.119:443/v1")
+    parser.add_argument("--base_url", default="http://192.222.53.124:443/v1")
     parser.add_argument("--max_tokens", type=int, default=32)
     parser.add_argument("--data_repeat", type=int, default=3)
     parser.add_argument("--data_seed", type=int, default=1337)
     parser.add_argument(
         "--output_file",
         type=str,
-        default="results/32B_w_image_cache_run_1.csv",
+        default="results/single_image_run_1.csv",
     )
     args = parser.parse_args()
 
@@ -137,9 +130,12 @@ if __name__ == "__main__":
     )
 
     df = pd.DataFrame(
-        {
-            "times_to_completion": times_to_completion,
-            "assistant_responses": responses,
-        }
+        {"times_to_completion": times_to_completion, "assistant_responses": responses}
     )
     df.to_csv(args.output_file, index=False)
+
+
+"""
+python scripts/s6_single_image.py --data_seed 1337 --output_file results/single_image_run_1.csv && python scripts/s6_single_image.py --data_seed 66 --output_file results/single_image_run_2.csv && python scripts/s6_single_image.py --data_seed 88 --output_file results/single_image_run_3.csv
+
+"""
